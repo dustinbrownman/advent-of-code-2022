@@ -10,7 +10,7 @@ fn main() {
     match args.pop() {
         Some(solution) => match solution.as_str() {
             "1" => part_one_solution(),
-            // "2" => part_two_solution(),
+            "2" => part_two_solution(),
             _ => println!("Unknown solution"),
         },
         None => part_one_solution(),
@@ -57,6 +57,49 @@ fn points_for_round((opponent, mine): (&str, &str)) -> u32 {
         "X" => points += 1,
         "Y" => points += 2,
         "Z" => points += 3,
+        _ => (),
+    }
+
+    points
+}
+
+fn part_two_solution() {
+    if let Ok(lines) = read_lines("./input.txt") {
+        let mut total_points: u32 = 0;
+
+        for line in lines {
+            if let Ok(line) = line {
+                println!("{}", line);
+                if let Some(round) = line.split_once(' ') {
+                    total_points += points_for_round_part_two(round)
+                }
+            } else {
+                println!("Error reading line");
+            }
+        }
+
+        println!("Total points: {}", total_points);
+    }
+}
+
+fn points_for_round_part_two((opponent, ending): (&str, &str)) -> u32 {
+    let play_rock = vec![("A", "Y"), ("B", "X"), ("C", "Z")];
+    let play_paper = vec![("A", "Z"), ("B", "Y"), ("C", "X")];
+    let play_scissors = vec![("A", "X"), ("B", "Z"), ("C", "Y")];
+
+    let mut points: u32 = 0;
+
+    if play_rock.contains(&(opponent, ending)) {
+        points += 1;
+    } else if play_paper.contains(&(opponent, ending)) {
+        points += 2;
+    } else if play_scissors.contains(&(opponent, ending)) {
+        points += 3;
+    }
+
+    match ending {
+        "Y" => points += 3,
+        "Z" => points += 6,
         _ => (),
     }
 

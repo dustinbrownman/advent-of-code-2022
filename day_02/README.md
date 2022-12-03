@@ -13,3 +13,7 @@ cargo run -- <solution number>
 This was a nice chance to work with tuples. I really wanted to be able to match my tuple against the items in the winning/drawing vectors, but had to settle for a simple `if` statement.
 
 I also had a hard time dealing with the `Result` object coming back for each line. The analyzer kept yelling at me about using `if let` and then saying it wasn't necessary. What I figured out was that I needed an `else` conditional on the `if let` for it to stop warning me.
+
+## Part 2
+
+This wasn't two bad. I just needed to invert the logic a bit. It was hard to get my head around how to structure the `play_rock|paper|scissors` vectors, but still think it's a nice way to handle it (versus needing to do a bunch of nested conditionals).
