@@ -11,7 +11,7 @@ fn main() {
         match args.pop() {
             Some(solution) => match solution.as_str() {
                 "1" => part_one_solution(lines),
-                // "2" => part_two_solution(),
+                "2" => part_two_solution(lines),
                 _ => println!("Unknown solution"),
             },
             None => part_one_solution(lines),
@@ -39,6 +39,24 @@ fn part_one_solution(lines: Lines<BufReader<File>>) {
     println!("Pairs fully containing another: {}", count);
 }
 
+fn part_two_solution(lines: Lines<BufReader<File>>) {
+    let mut count = 0;
+
+    for line in lines {
+        if let Ok(line) = line {
+            let (first, second) = parse_ranges(&line);
+
+            if overlaps(first, second) {
+                count += 1;
+            }
+        } else {
+            println!("Error reading line")
+        }
+    }
+
+    println!("Pairs overlapping: {}", count);
+}
+
 fn parse_ranges(r: &str) -> ((u32, u32), (u32, u32)) {
     if let Some(ranges) = r.split_once(',') {
         if let (Some(first), Some(second)) = (ranges.0.split_once('-'), ranges.1.split_once('-')) {
@@ -58,6 +76,17 @@ fn parse_ranges(r: &str) -> ((u32, u32), (u32, u32)) {
 
 fn within_range(outer: (u32, u32), inner: (u32, u32)) -> bool {
     outer.0 <= inner.0 && inner.1 <= outer.1
+}
+
+fn overlaps(a: (u32, u32), b: (u32, u32)) -> bool {
+    let (a_lower, a_upper) = a;
+    let (b_lower, b_upper) = b;
+
+    if b_upper >= a_upper {
+        a_upper >= b_lower
+    } else {
+        b_upper >= a_lower
+    }
 }
 
 // From https://doc.rust-lang.org/rust-by-example/std_misc/file/read_lines.html
