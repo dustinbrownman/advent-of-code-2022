@@ -11,7 +11,7 @@ fn main() {
     match args.pop() {
         Some(solution) => match solution.as_str() {
             "1" => part_one_solution(),
-            // "2" => part_two_solution(),
+            "2" => part_two_solution(),
             _ => println!("Unknown solution"),
         },
         None => part_one_solution(),
@@ -40,6 +40,39 @@ fn part_one_solution() {
 
         println!("Total priority: {}", total_priority);
     }
+}
+
+fn part_two_solution() {
+    if let Ok(mut lines) = read_lines("./input.txt") {
+        let mut sum: u32 = 0;
+        let mut current_group = Vec::with_capacity(3);
+
+        while let Some(line) = lines.next() {
+            current_group.push(line.unwrap());
+            if let Some(line2) = lines.next() {
+                current_group.push(line2.unwrap());
+            }
+            if let Some(line3) = lines.next() {
+                current_group.push(line3.unwrap());
+            }
+
+            sum += find_common_item_priority(&current_group);
+
+            current_group = Vec::with_capacity(3);
+        }
+
+        println!("Total priority: {}", sum);
+    }
+}
+
+fn find_common_item_priority(group: &[String]) -> u32 {
+    group.iter()
+        .map(|s: &String| string_to_priorities(s))
+        .map(HashSet::from_iter)
+        .reduce(|a: HashSet<u32>, b: HashSet<u32>| a.intersection(&b).copied().collect())
+        .into_iter()
+        .flatten()
+        .sum::<u32>()
 }
 
 fn string_to_priorities(input: &str) -> Vec<u32> {
