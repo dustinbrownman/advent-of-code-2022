@@ -25,3 +25,27 @@ impl CargoShip {
     }
 }
 ```
+
+## Part 2
+
+Well that was much easier, and a good chance to show off the strength of `VecDeque`! There might be more efficient ways of grabbing multiple elements off a stack at once, but I like how the code flow feels like the crane is picking up multiple crates and then moving them together.
+
+```rust
+impl CargoShip {
+    //...
+    fn super_move_crates(&mut self, (amount, from, to): (i8, i8, i8)) {
+        let mut crane = VecDeque::new();
+        // crane loads up the crates
+        for _ in 0..amount {
+            let this_crate = self.stacks[(from - 1) as usize].pop().unwrap();
+            crane.push_front(this_crate);
+        }
+
+        // then drops them off on the stack
+        for _ in 0..amount {
+            let this_crate = crane.pop_front().unwrap();
+            self.stacks[(to - 1) as usize].push(this_crate);
+        }
+    }
+}
+```

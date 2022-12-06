@@ -1,3 +1,4 @@
+use std::collections::VecDeque;
 use std::fs::File;
 use std::io::{BufRead, BufReader, Lines, Result};
 use std::path::Path;
@@ -35,9 +36,21 @@ struct CargoShip {
 
 // implement a move function on CargoShip that takes a tuple of i8
 impl CargoShip {
-    fn move_crate(&mut self, (amount, from, to): (i8, i8, i8)) {
+    fn move_crates(&mut self, (amount, from, to): (i8, i8, i8)) {
         for _ in 0..amount {
             let this_crate = self.stacks[(from - 1) as usize].pop().unwrap();
+            self.stacks[(to - 1) as usize].push(this_crate);
+        }
+    }
+
+    fn super_move_crates(&mut self, (amount, from, to): (i8, i8, i8)) {
+        let mut crane = VecDeque::new();
+        for _ in 0..amount {
+            let this_crate = self.stacks[(from - 1) as usize].pop().unwrap();
+            crane.push_front(this_crate);
+        }
+        for _ in 0..amount {
+            let this_crate = crane.pop_front().unwrap();
             self.stacks[(to - 1) as usize].push(this_crate);
         }
     }
@@ -49,7 +62,7 @@ fn part_one_solution(lines: Lines<BufReader<File>>) {
     for line in lines {
         if let Ok(line) = line {
             let instructions = parse_instructions(line);
-            ship.move_crate(instructions);
+            ship.move_crates(instructions);
         } else {
             println!("Error reading line")
         }
@@ -62,8 +75,23 @@ fn part_one_solution(lines: Lines<BufReader<File>>) {
     println!("Top crates: {}", top_crates);
 }
 
-fn part_two_solution(_lines: Lines<BufReader<File>>) {
+fn part_two_solution(lines: Lines<BufReader<File>>) {
+    let mut ship = CargoShip { stacks: generate_stacks() };
 
+    for line in lines {
+        if let Ok(line) = line {
+            let instructions = parse_instructions(line);
+            ship.super_move_crates(instructions);
+        } else {
+            println!("Error reading line")
+        }
+    }
+
+    let mut top_crates = String::new();
+    for stack in ship.stacks.iter() {
+        top_crates.push_str(stack.last().unwrap());
+    }
+    println!("Top crates: {}", top_crates);
 }
 
 fn parse_instructions(line: String) -> (i8, i8, i8) {
